@@ -97,13 +97,13 @@
 
 以下の点を確認してください。
 
-2.  **環境変数の設定**:
+1.  **環境変数の設定**:
     *   `.env` ファイルがプロジェクトのルートに存在し、`VITE_API_KEY=あなたのGemini APIキー` の形式で実際のAPIキーが正しく設定されているか。
     *   `services/geminiService.ts` で `import.meta.env.VITE_API_KEY` を使用しているか。
     *   `vite.config.ts` で `define` オブジェクトが削除されているか。
-3.  **Vite開発サーバーの再起動**: `.env` ファイルやViteの設定を変更した場合は、必ず `npm run dev` を一度停止 (`Ctrl + C`) し、再起動してください。
-4.  **`index.html` のエントリーポイント**: `index.html` の `</body>` タグの直前に `<script type="module" src="/index.tsx"></script>` が正しく記述されているか確認します。
-5.  **`node_modules` のクリーンな再構築**: `node_modules` フォルダを削除し、`npm install` を実行してから `npm run dev` を再実行します。**重要**: この手順を実行する前に、`npm run dev` など実行中のNode.jsプロセスをすべて停止し、開発ツール (VS Code/Cursorなど) を再起動してください。
+2.  **Vite開発サーバーの再起動**: `.env` ファイルやViteの設定を変更した場合は、必ず `npm run dev` を一度停止 (`Ctrl + C`) し、再起動してください。
+3.  **`index.html` のエントリーポイント**: `index.html` の `</body>` タグの直前に `<script type="module" src="/index.tsx"></script>` が正しく記述されているか確認します。
+4.  **`node_modules` のクリーンな再構築**: `node_modules` フォルダを削除し、`npm install` を実行してから `npm run dev` を再実行します。**重要**: この手順を実行する前に、`npm run dev` など実行中のNode.jsプロセスをすべて停止し、開発ツール (VS Code/Cursorなど) を再起動してください。
    **Windows (PowerShell)**:
    ```powershell
    Remove-Item -Path node_modules -Recurse -Force
