@@ -4,6 +4,7 @@ import { Dashboard } from './components/Dashboard';
 import { ReadingView } from './components/ReadingView';
 import { WritingView } from './components/WritingView';
 import { Zap } from 'lucide-react';
+import { logger } from './services/loggerService';
 
 const XP_PER_LEVEL = 100;
 const MAX_LEVEL = 50;
@@ -14,16 +15,23 @@ function App() {
   // Initialize state from localStorage or default
   const [userState, setUserState] = useState<UserState>(() => {
     const saved = localStorage.getItem('techcomm-user');
-    return saved ? JSON.parse(saved) : {
-      level: 1,
-      xp: 0,
-      xpToNextLevel: XP_PER_LEVEL,
-      history: []
-    };
+    if (saved) {
+      logger.info('Loading user state from localStorage.');
+      return JSON.parse(saved);
+    } else {
+      logger.info('Initializing default user state.');
+      return {
+        level: 1,
+        xp: 0,
+        xpToNextLevel: XP_PER_LEVEL,
+        history: []
+      };
+    }
   });
 
   // Persist state
   useEffect(() => {
+    logger.debug('Persisting user state to localStorage.', userState);
     localStorage.setItem('techcomm-user', JSON.stringify(userState));
   }, [userState]);
 

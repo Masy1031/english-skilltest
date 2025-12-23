@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { ReadingExercise, WritingScenario, WritingFeedback } from "../types";
+import { logger } from "./loggerService";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
@@ -15,6 +16,26 @@ const getLevelContext = (level: number): string => {
     return "Level: Advanced (Levels 41-50). The user is a manager or lead. Use sophisticated language, idioms, and nuance. Focus on negotiation, strategic roadmaps, and conflict resolution.";
   }
 };
+
+const topics = [
+  "a critical bug report",
+  "a new feature proposal",
+  "a code review feedback",
+  "a post-mortem analysis",
+  "a design document review",
+  "a request for technical assistance",
+  "a project status update",
+  "a discussion about API changes",
+  "a database migration plan",
+  "a security vulnerability report",
+  "a performance optimization suggestion",
+  "a hiring process update",
+  "a new tool adoption proposal",
+  "a technical debt discussion",
+  "an incident report",
+];
+
+const getRandomTopic = () => topics[Math.floor(Math.random() * topics.length)];
 
 const READING_SCHEMA: Schema = {
   type: Type.OBJECT,
@@ -40,24 +61,32 @@ const READING_SCHEMA: Schema = {
 };
 
 export const generateReadingExercise = async (level: number): Promise<ReadingExercise> => {
+  const topic = getRandomTopic();
+  logger.info(`Generating reading exercise for level: ${level}, topic: ${topic}`);
   const levelContext = getLevelContext(level);
   const prompt = `Generate a reading comprehension exercise for a software engineer learning English.
   ${levelContext}
+  This time, the situation is about ${topic}.
   Create a realistic email or message from a colleague about a software product issue or update.
   Include 3 multiple choice comprehension questions.
   IMPORTANT: The 'explanation' for each question must be in Japanese.`;
 
-  const response = await ai.models.generateContent({
-    model: MODEL_NAME,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: READING_SCHEMA,
-      systemInstruction: "You are a senior technical English tutor designed to simulate real-world software engineering communication."
-    }
-  });
-
-  return JSON.parse(response.text!) as ReadingExercise;
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: READING_SCHEMA,
+        systemInstruction: "You are a senior technical English tutor designed to simulate real-world software engineering communication."
+      }
+    });
+    logger.info("Successfully generated reading exercise.");
+    return JSON.parse(response.text!) as ReadingExercise;
+  } catch (error) {
+    logger.error("Error generating reading exercise:", error);
+    throw error;
+  }
 };
 
 const SCENARIO_SCHEMA: Schema = {
@@ -72,25 +101,33 @@ const SCENARIO_SCHEMA: Schema = {
 };
 
 export const generateWritingScenario = async (level: number): Promise<WritingScenario> => {
+  const topic = getRandomTopic();
+  logger.info(`Generating writing scenario for level: ${level}, topic: ${topic}`);
   const levelContext = getLevelContext(level);
   const prompt = `Generate a writing scenario for a software engineer.
   ${levelContext}
+  This time, the situation is about ${topic}.
   The user needs to write a message to an overseas colleague.
   
   Format constraints:
   1. 'context' must be in English (simulate a received message/situation).
   2. 'goal' and 'keyPoints' MUST be in Japanese (instructions to the user).`;
 
-  const response = await ai.models.generateContent({
-    model: MODEL_NAME,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: SCENARIO_SCHEMA
-    }
-  });
-
-  return JSON.parse(response.text!) as WritingScenario;
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: SCENARIO_SCHEMA
+      }
+    });
+    logger.info("Successfully generated writing scenario.");
+    return JSON.parse(response.text!) as WritingScenario;
+  } catch (error) {
+    logger.error("Error generating writing scenario:", error);
+    throw error;
+  }
 };
 
 const FEEDBACK_SCHEMA: Schema = {
@@ -105,6 +142,7 @@ const FEEDBACK_SCHEMA: Schema = {
 };
 
 export const evaluateWriting = async (level: number, scenario: WritingScenario, userDraft: string): Promise<WritingFeedback> => {
+  logger.info(`Evaluating writing for level: ${level}, scenario context: ${scenario.context}`);
   const levelContext = getLevelContext(level);
   const prompt = `Evaluate this English writing submission from a software engineer.
   ${levelContext}
@@ -121,14 +159,19 @@ export const evaluateWriting = async (level: number, scenario: WritingScenario, 
   3. 'critique': Provide constructive feedback in Japanese. ALWAYS include example sentences (例文) to illustrate your points.
   4. 'grammarMistakes': Explain errors in Japanese.`;
 
-  const response = await ai.models.generateContent({
-    model: MODEL_NAME,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: FEEDBACK_SCHEMA
-    }
-  });
-
-  return JSON.parse(response.text!) as WritingFeedback;
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: FEEDBACK_SCHEMA
+      }
+    });
+    logger.info("Successfully evaluated writing.");
+    return JSON.parse(response.text!) as WritingFeedback;
+  } catch (error) {
+    logger.error("Error evaluating writing:", error);
+    throw error;
+  }
 };
