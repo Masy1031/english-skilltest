@@ -64,28 +64,54 @@
 
 このプロジェクトをローカル環境で実行する手順です。
 
-1. **リポジトリのクローン**
+1. **リポジリトのクローン**
    ```bash
    git clone [repository-url]
    cd english-skilltest
    ```
 
 2. **依存関係のインストール**
+   必要なパッケージをインストールします。
    ```bash
    npm install
    ```
 
 3. **環境変数の設定**
-   ルートディレクトリに `.env` ファイルを作成し、Google GeminiのAPIキーを設定します。
+   プロジェクトのルートディレクトリに `**.env**` ファイルを作成し、ご自身のGoogle Gemini APIキーを設定します。
    ```env
-   GEMINI_API_KEY=your_api_key_here
+   VITE_API_KEY=あなたのGoogle Gemini APIキー
    ```
+   *   **注意**: このファイル (`.env`) はGitリポジトリには含めないでください。必要な場合は `.env.example` を参考にしてください。
 
 4. **アプリケーションの起動**
    ```bash
    npm run dev
    ```
    起動後、ブラウザで `http://localhost:3000` にアクセスしてください。
+
+---
+
+## 🚨 トラブルシューティング
+
+### 画面が真っ白で何も表示されない場合
+
+以下の点を確認してください。
+
+2.  **環境変数の設定**:
+    *   `.env` ファイルがプロジェクトのルートに存在し、`VITE_API_KEY=あなたのGemini APIキー` の形式で実際のAPIキーが正しく設定されているか。
+    *   `services/geminiService.ts` で `import.meta.env.VITE_API_KEY` を使用しているか。
+    *   `vite.config.ts` で `define` オブジェクトが削除されているか。
+3.  **Vite開発サーバーの再起動**: `.env` ファイルやViteの設定を変更した場合は、必ず `npm run dev` を一度停止 (`Ctrl + C`) し、再起動してください。
+4.  **`index.html` のエントリーポイント**: `index.html` の `</body>` タグの直前に `<script type="module" src="/index.tsx"></script>` が正しく記述されているか確認します。
+5.  **`node_modules` のクリーンな再構築**: `node_modules` フォルダを削除し、`npm install` を実行してから `npm run dev` を再実行します。**重要**: この手順を実行する前に、`npm run dev` など実行中のNode.jsプロセスをすべて停止し、開発ツール (VS Code/Cursorなど) を再起動してください。
+   **Windows (PowerShell)**:
+   ```powershell
+   Remove-Item -Path node_modules -Recurse -Force
+   ```
+   **macOS/Linux**:
+   ```bash
+   rm -rf node_modules
+   ```
 
 ---
 
