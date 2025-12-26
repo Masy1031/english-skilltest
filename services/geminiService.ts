@@ -64,12 +64,46 @@ export const generateReadingExercise = async (level: number): Promise<ReadingExe
   const topic = getRandomTopic();
   logger.info(`Generating reading exercise for level: ${level}, topic: ${topic}`);
   const levelContext = getLevelContext(level);
-  const prompt = `Generate a reading comprehension exercise for a software engineer learning English.
+  const prompt = `You are an AI assistant that creates reading comprehension exercises for a software engineer learning English.
   ${levelContext}
   This time, the situation is about ${topic}.
-  Create a realistic email or message from a colleague about a software product issue or update.
-  Include 3 multiple choice comprehension questions.
-  IMPORTANT: The 'explanation' for each question must be in Japanese.`;
+  
+  以下は、適切に構成された読解演習の例です。AIはこの例のトーン、スタイル、複雑さ、および日本語での解説の質に従って生成する必要があります。
+  
+  --- 例の開始 ---
+  Subject: 緊急：データベース移行計画のレビュー
+  Sender: アリス、シニアDBA
+  Body: チームの皆さん、お元気ですか。主要な本番クラスターのデータベース移行計画案について、緊急のレビューをお願いしたくご連絡しました。ユーザーへの影響を最小限に抑えつつ移行を実行できる、来週土曜日のUTC午前2時から午前5時の間の重要な時間帯を特定しました。計画には、PostgreSQLをバージョン12から14にアップグレードし、シームレスな移行のために論理レプリケーションを活用することが含まれます。主な手順は、新しいPostgreSQL 14インスタンスのセットアップ、現在のPostgreSQL 12プライマリからの論理レプリケーションの構成、データ同期の監視、そして最後にアプリケーションを新しいプライマリに切り替えることです。ステージング環境で広範囲なテストを実施し、プロセスは成功しました。詳細な手順とロールバック手順を概説した添付ドキュメントをご確認ください。計画を最終決定する前に、皆様からのフィードバックが不可欠です。明日のスタンドアップで懸念事項について話し合いましょう。よろしくお願いいたします、アリス。
+  
+  Questions:
+  1. このメールの主な目的は何ですか？
+     A) 完了したデータベース移行を発表すること。
+     B) データベース移行計画のレビューを依頼すること。
+     C) 新しいデータベースシステムを提案すること。
+     D) データベースの問題を報告すること。
+     Correct Answer: B
+     Explanation: このメールの主な目的は、提案されているデータベース移行計画の緊急レビューを依頼することです。
+  
+  2. 移行を実行するための重要な時間帯はいつですか？
+     A) 明日のスタンドアップ。
+     B) 来週土曜日のUTC午前2時から午前5時の間。
+     C) 営業時間内。
+     D) 来週中いつでも。
+     Correct Answer: B
+     Explanation: 移行の重要な期間は、来週土曜日のUTC午前2時から午前5時の間とされています。
+  
+  3. PostgreSQLのアップグレード中にシームレスな移行のために言及されている技術は何ですか？
+     A) 物理レプリケーション。
+     B) データベーススナップショット。
+     C) 論理レプリケーション。
+     D) コンテナ化。
+     Correct Answer: C
+     Explanation: PostgreSQLのアップグレード中にシームレスな移行のために言及されている技術は論理レプリケーションです。
+  --- 例の終了 ---
+  
+  上記の例の形式とスタイルに従って、同僚からの現実的なメールまたはメッセージ（約200〜300語）を作成してください。ソフトウェア製品の問題または更新に関するものです。
+  選択肢が4つ、正しい答えが1つ、簡単な説明が含まれる多肢選択式の理解度質問を3つ含めてください。
+  重要：各質問の「explanation」は日本語でなければなりません。`;
 
   try {
     const response = await ai.models.generateContent({
